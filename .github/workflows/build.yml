@@ -1,0 +1,45 @@
+# Builds the firmware and the examples on every push / PR, and attaches the flashable image to tagged releases.
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: pio-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
+      - run: pip install platformio
+
+      - name: Build firmware (examples/AutoEyes)
+        run: pio run
+
+      - name: Build the Basic example
+        run: >
+          pio ci examples/Basic --lib src --board esp32-s3-devkitc-1
+          --project-option="platform=espressif32@7.1.1"
+          --project-option="lib_deps=lovyan03/LovyanGFX@1.1.16"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: robot-eyes-esp32s3
+          path: .pio/build/esp32s3/robot-eyes-esp32s3.bin
+
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          files: .pio/build/esp32s3/robot-eyes-esp32s3.bin
