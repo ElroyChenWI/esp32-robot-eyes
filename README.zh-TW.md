@@ -15,6 +15,14 @@
 - 40 MHz SPI 下大約每秒 38 張
 - 小巧的 Arduino 函式庫（`RobotEyes`），可以用自己的程式控制眼睛
 
+## 兩種風格
+
+短按 BOOT 切換。
+
+| 扁平（預設） | 水亮 |
+|---|---|
+| ![扁平風](docs/img/eyes_demo.gif) | ![水亮風](docs/img/eyes_demo_glossy.gif) |
+
 ![兩種風格、六種表情](docs/img/eyes_contact_sheet.png)
 
 ## 需要的東西

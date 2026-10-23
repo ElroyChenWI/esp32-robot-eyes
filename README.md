@@ -15,6 +15,14 @@ Clone, flash, and they come alive. Then build your own robot on top of the libra
 - ~38 fps on a 40 MHz SPI bus
 - A small Arduino library (`RobotEyes`) to drive the eyes from your own code
 
+## Styles
+
+Short-press BOOT to switch.
+
+| Flat (default) | Glossy |
+|---|---|
+| ![Flat style](docs/img/eyes_demo.gif) | ![Glossy style](docs/img/eyes_demo_glossy.gif) |
+
 ![All moods in both styles](docs/img/eyes_contact_sheet.png)
 
 ## What you need
