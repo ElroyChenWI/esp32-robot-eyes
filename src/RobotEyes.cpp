@@ -85,8 +85,7 @@ void RobotEyes::setInvert(bool on) {
 
 float RobotEyes::frand(float a, float b) { return a + (b - a) * (esp_random() / 4294967295.0f); }
 
-void RobotEyes::update() {
-  uint32_t now = millis();
+void RobotEyes::update(uint32_t now) {
   runBehaviors(now);
   animate(now);
   draw();

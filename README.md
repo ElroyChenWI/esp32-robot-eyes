@@ -5,15 +5,17 @@ Clone, flash, and they come alive. Then build your own robot on top of the libra
 
 [繁體中文說明](README.zh-TW.md)
 
-![All moods in both styles](docs/img/eyes_contact_sheet.png)
+![Robot eyes demo](docs/img/eyes_demo.gif)
 
-*Frames captured straight from the ESP32's frame buffer: exactly what the screen shows.*
+*Recorded frame by frame from the ESP32's frame buffer: exactly what the screen shows.*
 
 - Two styles: **Flat** (teal ovals with a small pupil) and **Glossy** (rim, iris, pupil, highlights)
 - Six moods: neutral, happy, sad, angry, sleepy, surprised
 - Smooth blinks (sometimes double), quick glances, random mood visits: it looks alive on its own
 - ~38 fps on a 40 MHz SPI bus
 - A small Arduino library (`RobotEyes`) to drive the eyes from your own code
+
+![All moods in both styles](docs/img/eyes_contact_sheet.png)
 
 ## What you need
 
@@ -80,6 +82,8 @@ Serial commands (115200 baud, one character each):
 | `s` / `i` | Toggle style / color inversion |
 | `p` / `r` | Pause / resume the autonomous behavior |
 | `c` | Capture the current frame (see [tools/capture.py](tools/capture.py)) |
+| `f` / `n` | Film mode: stop the clock / step 50 ms and send the frame (see [tools/record_gif.py](tools/record_gif.py)) |
+| `+` | Switch serial to 921600 baud until reset |
 
 ## Troubleshooting
 
@@ -98,6 +102,7 @@ src/                    the RobotEyes library (drawing, moods, behaviors, displa
 examples/AutoEyes/      the default firmware: button + saved settings + serial commands
 examples/Basic/         the smallest possible sketch
 tools/capture.py        save what the screen shows as PNGs (via the 'c' serial command)
+tools/record_gif.py     record a smooth GIF frame by frame (film mode)
 tools/merge_bin.py      build step that writes the single flashable .bin
 platformio.ini          builds examples/AutoEyes
 ```
@@ -132,6 +137,7 @@ void loop() {
 | `setFlatColors(eye, pupil)` | RGB565 colors of the flat style, e.g. `lgfx::color565(255, 180, 0)` |
 | `setInvert(bool)` | Color inversion |
 | `canvas()` | The last drawn frame (`LGFX_Sprite`, RGB565), e.g. to stream it somewhere |
+| `update(now_ms)` | `update()` with your own clock, e.g. to step frame by frame |
 
 Different wiring:
 

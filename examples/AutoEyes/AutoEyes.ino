@@ -1,4 +1,4 @@
-// AutoEyes: the ready-to-flash firmware (this is what the web installer puts on the board).
+// AutoEyes: the default firmware (also the prebuilt .bin in each release).
 //
 // BOOT button:  short press = switch style (flat / glossy)
 //               hold 1 s    = invert colors (if your screen shows a white background)
@@ -11,6 +11,9 @@
 //   b = blink             h / l / k / j = look left / right / up / down   x = look ahead
 //   c = capture the current frame: "CAP <w> <h>\n" + w*h*2 bytes RGB565 big-endian + "\nEND\n"
 //       (tools/capture.py turns these into PNGs)
+//   f = film mode on/off: the clock stops; n = advance 50 ms, draw, and send that frame like 'c'
+//       (tools/record_gif.py uses this to record smooth GIFs however slow the serial link is)
+//   + = switch serial to 921600 baud until reset (faster captures)
 #include <Preferences.h>
 #include <RobotEyes.h>
 
@@ -32,6 +35,10 @@ static constexpr uint32_t LONG_PRESS_MS = 1000;
 RobotEyesDisplay display(makePins());
 RobotEyes eyes(display);
 Preferences prefs;
+
+static constexpr uint32_t FILM_STEP_MS = 50;  // 20 fps recordings
+static bool film = false;
+static uint32_t film_t = 0;
 
 static void saveSettings() {
   prefs.putUChar("style", (uint8_t)eyes.style());
@@ -113,6 +120,22 @@ static void pollSerial() {
         Serial.println("resumed");
         break;
       case 'c': capture_next = true; break;
+      case 'f':
+        film = !film;
+        film_t = millis();
+        Serial.printf("film %s\n", film ? "on" : "off");
+        break;
+      case 'n':
+        if (film) {
+          film_t += FILM_STEP_MS;
+          eyes.update(film_t);
+          sendCapture();
+        }
+        break;
+      case '+':
+        Serial.flush();
+        Serial.updateBaudRate(921600);
+        break;
     }
   }
 }
@@ -133,5 +156,5 @@ void loop() {
   uint32_t now = millis();
   pollButton(now);
   pollSerial();
-  eyes.update();
+  if (!film) eyes.update();
 }

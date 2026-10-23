@@ -29,11 +29,14 @@ def read_until(ser, token, timeout=5.0):
     raise TimeoutError(f"no {token!r} from board; got {buf[-200:]!r}")
 
 
-def capture(ser):
+def capture(ser, cmd=b"c"):
+    """Send a frame command ('c', or 'n' in film mode) and return the frame the board sends back (BGR)."""
     ser.reset_input_buffer()
-    ser.write(b"c")
-    head = read_until(ser, b"\n", timeout=3.0)
+    ser.write(cmd)
+    head = read_until(ser, b"CAP ", timeout=3.0)
     head = head[head.index(b"CAP "):]
+    while b"\n" not in head:
+        head += ser.read(ser.in_waiting or 1)
     line, rest = head.split(b"\n", 1)
     w, h = (int(v) for v in line.split()[1:3])
     need = w * h * 2

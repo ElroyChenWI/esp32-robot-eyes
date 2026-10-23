@@ -5,15 +5,17 @@
 
 [English](README.md)
 
-![兩種風格、六種表情](docs/img/eyes_contact_sheet.png)
+![機器人眼睛動畫](docs/img/eyes_demo.gif)
 
-*以上畫面是直接從 ESP32 的畫面記憶體抓下來的，跟螢幕上顯示的完全一樣。*
+*以上動畫是從 ESP32 的畫面記憶體一格一格錄下來的，跟螢幕上顯示的完全一樣。*
 
 - 兩種風格：**扁平**（藍綠橢圓眼加小瞳孔）、**水亮**（外圈、虹膜、瞳孔、反光點）
 - 六種表情：平常、開心、難過、生氣、想睡、驚訝
 - 會自己眨眼（偶爾連眨兩下）、四處看、隨機換表情，看起來像活的
 - 40 MHz SPI 下大約每秒 38 張
 - 小巧的 Arduino 函式庫（`RobotEyes`），可以用自己的程式控制眼睛
+
+![兩種風格、六種表情](docs/img/eyes_contact_sheet.png)
 
 ## 需要的東西
 
@@ -79,6 +81,8 @@ pio run -t upload
 | `s` / `i` | 切換風格 / 顏色反轉 |
 | `p` / `r` | 暫停 / 恢復自動行為 |
 | `c` | 抓下目前畫面（見 [tools/capture.py](tools/capture.py)） |
+| `f` / `n` | 錄影模式：暫停時鐘 / 前進 50 毫秒並送出那一格（見 [tools/record_gif.py](tools/record_gif.py)） |
+| `+` | 序列埠切到 921600 baud，直到重開機 |
 
 ## 常見問題
 
@@ -97,6 +101,7 @@ src/                    RobotEyes 函式庫（畫圖、表情、自動行為、�
 examples/AutoEyes/      預設韌體：按鍵 + 設定記憶 + 序列指令
 examples/Basic/         最精簡的範例
 tools/capture.py        把螢幕畫面存成 PNG（透過序列指令 'c'）
+tools/record_gif.py     一格一格錄出流暢的 GIF（錄影模式）
 tools/merge_bin.py      編譯時產生單一可燒錄 .bin 的步驟
 platformio.ini          編譯 examples/AutoEyes
 ```
@@ -131,6 +136,7 @@ void loop() {
 | `setFlatColors(eye, pupil)` | 扁平風的顏色（RGB565），例如 `lgfx::color565(255, 180, 0)` |
 | `setInvert(bool)` | 顏色反轉 |
 | `canvas()` | 最後畫好的那張畫面（`LGFX_Sprite`、RGB565），例如可以傳到別的地方 |
+| `update(now_ms)` | 用你自己的時鐘呼叫 `update()`，例如一格一格前進 |
 
 接線不一樣時：
 

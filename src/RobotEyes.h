@@ -24,7 +24,9 @@ class RobotEyes {
   // Initializes the display (landscape) and allocates the 320x200 drawing canvas. Returns false on failure.
   bool begin(uint8_t rotation = 1, uint8_t brightness = 200);
   // Call every loop(): runs the enabled behaviors, animates, draws and pushes one frame.
-  void update();
+  void update() { update(millis()); }
+  // Same, with your own clock in ms (e.g. to step frame by frame when recording).
+  void update(uint32_t now_ms);
 
   void setMood(EyeMood m);
   EyeMood mood() const { return mood_; }
